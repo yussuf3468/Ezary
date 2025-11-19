@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatCurrency, formatDate } from '@/lib/utils'
-import type { DashboardStats, TransactionWithCustomer } from '@/types'
+import type { DashboardStats, TransactionWithCustomer, ShopBalance, Transaction } from '@/types'
 import { ArrowUpCircle, ArrowDownCircle, AlertCircle, TrendingUp } from 'lucide-react'
 
 export function DashboardPage() {
@@ -27,6 +27,7 @@ export function DashboardPage() {
       const { data: balances } = await supabase
         .from('shop_balances')
         .select('*')
+        .returns<ShopBalance[]>()
 
       // Get today's transactions count
       const today = new Date().toISOString().split('T')[0]
@@ -40,6 +41,7 @@ export function DashboardPage() {
         .from('transactions')
         .select('*')
         .eq('is_unclaimed', true)
+        .returns<Transaction[]>()
 
       // Get recent transactions with customer info
       const { data: recentData } = await supabase
