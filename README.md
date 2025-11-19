@@ -18,7 +18,7 @@ A professional, production-grade web application for managing financial transact
 - **Frontend**: React 18 + TypeScript + Vite
 - **Styling**: TailwindCSS + Shadcn/UI + Framer Motion
 - **Backend**: Supabase (PostgreSQL + Auth + Real-time)
-- **Deployment**: 
+- **Deployment**:
   - Frontend → Vercel
   - Backend/Database → Supabase
 
@@ -46,6 +46,7 @@ cd "Ezary Project"
 ### 3. Run database migrations
 
 In your Supabase project dashboard:
+
 1. Go to SQL Editor
 2. Run the migrations in order:
    - `supabase/migrations/20231119000001_initial_schema.sql`
@@ -125,6 +126,7 @@ Ezary Project/
 ## 🔐 Authentication
 
 The app uses Supabase Auth for secure user management:
+
 - Email/password authentication
 - Protected routes
 - Session management
@@ -148,6 +150,7 @@ Backend is automatically hosted on Supabase. Just ensure your migrations are app
 ## 👥 Default Test Data
 
 The seed migration includes sample customers:
+
 - Ali Muse Fatah
 - Bahjo
 - Ibrahim Alshifa
@@ -174,6 +177,7 @@ https://github.com/yussuf3468/Ezary/issues
 ## 👨‍💻 Author
 
 **Yussuf**
+
 - GitHub: [@yussuf3468](https://github.com/yussuf3468)
 
 ---

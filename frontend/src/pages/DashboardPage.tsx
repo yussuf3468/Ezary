@@ -1,9 +1,19 @@
-import { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabase'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { formatCurrency, formatDate } from '@/lib/utils'
-import type { DashboardStats, TransactionWithCustomer, ShopBalance, Transaction } from '@/types'
-import { ArrowUpCircle, ArrowDownCircle, AlertCircle, TrendingUp } from 'lucide-react'
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatCurrency, formatDate } from "@/lib/utils";
+import type {
+  DashboardStats,
+  TransactionWithCustomer,
+  ShopBalance,
+  Transaction,
+} from "@/types";
+import {
+  ArrowUpCircle,
+  ArrowDownCircle,
+  AlertCircle,
+  TrendingUp,
+} from "lucide-react";
 
 export function DashboardPage() {
   const [stats, setStats] = useState<DashboardStats>({
@@ -13,53 +23,63 @@ export function DashboardPage() {
     unclaimedCount: 0,
     unclaimedAmountKES: 0,
     unclaimedAmountUSD: 0,
-  })
-  const [recentTransactions, setRecentTransactions] = useState<TransactionWithCustomer[]>([])
-  const [loading, setLoading] = useState(true)
+  });
+  const [recentTransactions, setRecentTransactions] = useState<
+    TransactionWithCustomer[]
+  >([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadDashboardData()
-  }, [])
+    loadDashboardData();
+  }, []);
 
   const loadDashboardData = async () => {
     try {
       // Get shop balances
       const { data: balances } = await supabase
-        .from('shop_balances')
-        .select('*')
-        .returns<ShopBalance[]>()
+        .from("shop_balances")
+        .select("*")
+        .returns<ShopBalance[]>();
 
       // Get today's transactions count
-      const today = new Date().toISOString().split('T')[0]
+      const today = new Date().toISOString().split("T")[0];
       const { count: todayCount } = await supabase
-        .from('transactions')
-        .select('*', { count: 'exact', head: true })
-        .eq('date', today)
+        .from("transactions")
+        .select("*", { count: "exact", head: true })
+        .eq("date", today);
 
       // Get unclaimed transactions
       const { data: unclaimedData } = await supabase
-        .from('transactions')
-        .select('*')
-        .eq('is_unclaimed', true)
-        .returns<Transaction[]>()
+        .from("transactions")
+        .select("*")
+        .eq("is_unclaimed", true)
+        .returns<Transaction[]>();
 
       // Get recent transactions with customer info
       const { data: recentData } = await supabase
-        .from('transactions')
-        .select(`
+        .from("transactions")
+        .select(
+          `
           *,
           customer:customers(*)
-        `)
-        .order('created_at', { ascending: false })
-        .limit(10)
+        `
+        )
+        .order("created_at", { ascending: false })
+        .limit(10);
 
-      const kesBalance = balances?.find(b => b.currency === 'KES')?.total_balance || 0
-      const usdBalance = balances?.find(b => b.currency === 'USD')?.total_balance || 0
+      const kesBalance =
+        balances?.find((b) => b.currency === "KES")?.total_balance || 0;
+      const usdBalance =
+        balances?.find((b) => b.currency === "USD")?.total_balance || 0;
 
-      const unclaimedKES = unclaimedData?.filter(t => t.currency === 'KES')
-        .reduce((sum, t) => sum + t.amount_in - t.amount_out, 0) || 0
-      const unclaimedUSD = unclaimedData?.filter(t => t.currency === 'USD')
-        .reduce((sum, t) => sum + t.amount_in - t.amount_out, 0) || 0
+      const unclaimedKES =
+        unclaimedData
+          ?.filter((t) => t.currency === "KES")
+          .reduce((sum, t) => sum + t.amount_in - t.amount_out, 0) || 0;
+      const unclaimedUSD =
+        unclaimedData
+          ?.filter((t) => t.currency === "USD")
+          .reduce((sum, t) => sum + t.amount_in - t.amount_out, 0) || 0;
 
       setStats({
         totalKES: kesBalance,
@@ -68,29 +88,33 @@ export function DashboardPage() {
         unclaimedCount: unclaimedData?.length || 0,
         unclaimedAmountKES: unclaimedKES,
         unclaimedAmountUSD: unclaimedUSD,
-      })
+      });
 
-      setRecentTransactions(recentData || [])
+      setRecentTransactions(recentData || []);
     } catch (error) {
-      console.error('Error loading dashboard:', error)
+      console.error("Error loading dashboard:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-lg text-gray-500">Loading dashboard...</div>
       </div>
-    )
+    );
   }
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Dashboard</h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">Welcome back! Here's your financial overview.</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+          Dashboard
+        </h1>
+        <p className="text-gray-600 dark:text-gray-400 mt-1">
+          Welcome back! Here's your financial overview.
+        </p>
       </div>
 
       {/* Stats Cards */}
@@ -104,7 +128,7 @@ export function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">
-              {formatCurrency(stats.totalKES, 'KES')}
+              {formatCurrency(stats.totalKES, "KES")}
             </div>
             <p className="text-xs text-blue-700 dark:text-blue-400 mt-1">
               Kenyan Shillings
@@ -121,7 +145,7 @@ export function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-900 dark:text-green-100">
-              {formatCurrency(stats.totalUSD, 'USD')}
+              {formatCurrency(stats.totalUSD, "USD")}
             </div>
             <p className="text-xs text-green-700 dark:text-green-400 mt-1">
               US Dollars
@@ -158,7 +182,8 @@ export function DashboardPage() {
               {stats.unclaimedCount}
             </div>
             <p className="text-xs text-orange-700 dark:text-orange-400 mt-1">
-              {formatCurrency(stats.unclaimedAmountKES, 'KES')} + {formatCurrency(stats.unclaimedAmountUSD, 'USD')}
+              {formatCurrency(stats.unclaimedAmountKES, "KES")} +{" "}
+              {formatCurrency(stats.unclaimedAmountUSD, "USD")}
             </p>
           </CardContent>
         </Card>
@@ -172,7 +197,9 @@ export function DashboardPage() {
         <CardContent>
           <div className="space-y-4">
             {recentTransactions.length === 0 ? (
-              <p className="text-center text-gray-500 py-8">No transactions yet</p>
+              <p className="text-center text-gray-500 py-8">
+                No transactions yet
+              </p>
             ) : (
               recentTransactions.map((transaction) => (
                 <div
@@ -180,11 +207,13 @@ export function DashboardPage() {
                   className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                 >
                   <div className="flex items-center space-x-4">
-                    <div className={`p-2 rounded-full ${
-                      transaction.amount_in > 0 
-                        ? 'bg-green-100 dark:bg-green-900/30' 
-                        : 'bg-red-100 dark:bg-red-900/30'
-                    }`}>
+                    <div
+                      className={`p-2 rounded-full ${
+                        transaction.amount_in > 0
+                          ? "bg-green-100 dark:bg-green-900/30"
+                          : "bg-red-100 dark:bg-red-900/30"
+                      }`}
+                    >
                       {transaction.amount_in > 0 ? (
                         <ArrowDownCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
                       ) : (
@@ -193,7 +222,7 @@ export function DashboardPage() {
                     </div>
                     <div>
                       <p className="font-medium text-gray-900 dark:text-gray-100">
-                        {transaction.customer?.name || 'Unclaimed'}
+                        {transaction.customer?.name || "Unclaimed"}
                       </p>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
                         {transaction.channel} • {formatDate(transaction.date)}
@@ -201,17 +230,27 @@ export function DashboardPage() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className={`font-semibold ${
-                      transaction.amount_in > 0 ? 'text-green-600' : 'text-red-600'
-                    }`}>
-                      {transaction.amount_in > 0 ? '+' : '-'}
+                    <p
+                      className={`font-semibold ${
+                        transaction.amount_in > 0
+                          ? "text-green-600"
+                          : "text-red-600"
+                      }`}
+                    >
+                      {transaction.amount_in > 0 ? "+" : "-"}
                       {formatCurrency(
-                        transaction.amount_in > 0 ? transaction.amount_in : transaction.amount_out,
+                        transaction.amount_in > 0
+                          ? transaction.amount_in
+                          : transaction.amount_out,
                         transaction.currency
                       )}
                     </p>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                      Balance: {formatCurrency(transaction.balance_after, transaction.currency)}
+                      Balance:{" "}
+                      {formatCurrency(
+                        transaction.balance_after,
+                        transaction.currency
+                      )}
                     </p>
                   </div>
                 </div>
@@ -221,5 +260,5 @@ export function DashboardPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

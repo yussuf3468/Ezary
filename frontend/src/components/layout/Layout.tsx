@@ -1,47 +1,51 @@
-import type { ReactNode } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { useAuth } from '@/contexts/AuthContext'
-import { Button } from '@/components/ui/button'
-import { 
-  LayoutDashboard, 
-  Receipt, 
-  Users, 
-  AlertCircle, 
-  DollarSign, 
-  FileText, 
+import type { ReactNode } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
+import {
+  LayoutDashboard,
+  Receipt,
+  Users,
+  AlertCircle,
+  DollarSign,
+  FileText,
   LogOut,
-  Menu
-} from 'lucide-react'
-import { useState } from 'react'
+  Menu,
+} from "lucide-react";
+import { useState } from "react";
 
 interface LayoutProps {
-  children: ReactNode
+  children: ReactNode;
 }
 
 const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Transactions', href: '/transactions', icon: Receipt },
-  { name: 'Customers', href: '/customers', icon: Users },
-  { name: 'Unclaimed', href: '/unclaimed', icon: AlertCircle },
-  { name: 'Forex', href: '/forex', icon: DollarSign },
-  { name: 'Reports', href: '/reports', icon: FileText },
-]
+  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Transactions", href: "/transactions", icon: Receipt },
+  { name: "Customers", href: "/customers", icon: Users },
+  { name: "Unclaimed", href: "/unclaimed", icon: AlertCircle },
+  { name: "Forex", href: "/forex", icon: DollarSign },
+  { name: "Reports", href: "/reports", icon: FileText },
+];
 
 export function Layout({ children }: LayoutProps) {
-  const { user, signOut } = useAuth()
-  const location = useLocation()
-  const navigate = useNavigate()
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const { user, signOut } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleSignOut = async () => {
-    await signOut()
-    navigate('/login')
-  }
+    await signOut();
+    navigate("/login");
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transform transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}>
+      <div
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transform transition-transform duration-300 ease-in-out ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        } lg:translate-x-0`}
+      >
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200 dark:border-gray-700">
@@ -57,22 +61,22 @@ export function Layout({ children }: LayoutProps) {
           {/* Navigation */}
           <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
             {navigation.map((item) => {
-              const Icon = item.icon
-              const isActive = location.pathname === item.href
+              const Icon = item.icon;
+              const isActive = location.pathname === item.href;
               return (
                 <Link
                   key={item.name}
                   to={item.href}
                   className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
                     isActive
-                      ? 'bg-primary text-white'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                      ? "bg-primary text-white"
+                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                   }`}
                 >
                   <Icon className="h-5 w-5 mr-3" />
                   {item.name}
                 </Link>
-              )
+              );
             })}
           </nav>
 
@@ -121,15 +125,14 @@ export function Layout({ children }: LayoutProps) {
             <Menu className="h-6 w-6" />
           </button>
           <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-            {navigation.find(item => item.href === location.pathname)?.name || 'Ezary'}
+            {navigation.find((item) => item.href === location.pathname)?.name ||
+              "Ezary"}
           </h2>
         </div>
 
         {/* Page content */}
-        <main className="p-6">
-          {children}
-        </main>
+        <main className="p-6">{children}</main>
       </div>
     </div>
-  )
+  );
 }
